@@ -1,0 +1,59 @@
+# Publishes the public Mrs Chow's Kitchen site to GitHub Pages:
+#   https://clintyboy123.github.io/mrs-chows-kitchen-website/
+# Only the pages and their assets go live. The PHP admin, the saved content,
+# the docs and the unlicensed Spell of Asia font are left out (the site falls
+# back to Ma Shan Zheng until the font's commercial licence is bought).
+name: Publish site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mrs-chows-kitchen-website/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect the public files
+        run: |
+          mkdir _site
+          rsync -a \
+            --exclude 'admin/' --exclude 'content/' --exclude '*.php' \
+            --exclude 'README.txt' --exclude 'documentation.html' \
+            --exclude 'assets/fonts/spell-of-asia.ttf' --exclude '.DS_Store' \
+            mrs-chows-kitchen-website/ _site/
+          # No font file on the public site: drop its @font-face so nothing requests it.
+          sed -i "s#@font-face{font-family:'Spell of Asia';src:url('../fonts/spell-of-asia.ttf') format('truetype');font-display:swap}##" _site/assets/css/style.css
+          # Drop the "edit at /admin" developer comment (there is no admin here).
+          sed -i '/<!-- This file is generated\./d' _site/*.html
+          touch _site/.nojekyll
+          echo "Published files:"; find _site -type f | wc -l
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

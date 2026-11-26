@@ -22,3 +22,6 @@ _source/noodle-bowl/render/
 
 # System clutter
 .DS_Store
+
+# Spell of Asia: personal-use licence only. Kept locally for the client zip, not in this public repo.
+mrs-chows-kitchen-website/assets/fonts/spell-of-asia.ttf
