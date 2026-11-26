@@ -1,0 +1,231 @@
+/* =========================================================================
+   Mrs Chow's Kitchen — motion layer (v1.7.0)
+   One curve everywhere: cubic-bezier(0.16, 1, 0.3, 1).
+   Major entrances 4–6 s · direct UI feedback (hover) 0.8 s.
+   Only active when motion.js adds .js-motion to <html>
+   (never with prefers-reduced-motion, never without IntersectionObserver).
+   ========================================================================= */
+
+:root{
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --dur-reveal:4s;     /* text + blocks */
+  --dur-image:5s;      /* photos blur into focus */
+  --dur-ui:.8s;        /* hover feedback */
+}
+
+/* ---------- Hero text: rise + sharpen, 4 s, staggered ---------- */
+@keyframes riseSoft{
+  from{opacity:0;transform:translate3d(0,32px,0);filter:blur(8px)}
+  to{opacity:1;transform:none;filter:blur(0)}
+}
+.js-motion .rise{animation:riseSoft var(--dur-reveal) var(--ease-out) both}
+.js-motion .d1{animation-delay:.25s}
+.js-motion .d2{animation-delay:.5s}
+.js-motion .d3{animation-delay:.75s}
+.js-motion .d4{animation-delay:1s}
+.js-motion .d5{animation-delay:1.25s}
+
+/* ---------- Scroll reveals: time-based, not scrubbed ---------- */
+.js-motion .reveal{
+  animation:none;
+  opacity:0;
+  transform:translate3d(0,40px,0);
+  filter:blur(6px);
+  transition:opacity var(--dur-reveal) var(--ease-out),
+             transform var(--dur-reveal) var(--ease-out),
+             filter var(--dur-reveal) var(--ease-out);
+  transition-delay:var(--stagger,0s);
+}
+.js-motion .reveal.is-in{opacity:1;transform:none;filter:blur(0)}
+
+/* Cards float up a little further */
+.js-motion .tiles.reveal,.js-motion .scroll.reveal{transform:translate3d(0,64px,0)}
+.js-motion .tiles.reveal.is-in,.js-motion .scroll.reveal.is-in{transform:none}
+
+/* Drawn rules */
+.js-motion .rule.draw{animation:none;transform:scaleX(0);transform-origin:left;transition:transform var(--dur-reveal) var(--ease-out)}
+.js-motion .rule.draw.is-in{transform:scaleX(1)}
+
+/* ---------- Photos: blur into focus + room for parallax ---------- */
+.js-motion .ph-zoom{
+  animation:none;
+  inset:-8% 0;                       /* extra height so the image can drift */
+  transform:scale(1.08);
+  filter:blur(14px);
+  transition:transform var(--dur-image) var(--ease-out),
+             filter calc(var(--dur-image) - .5s) var(--ease-out);
+  will-change:transform,translate;
+}
+.js-motion .ph-zoom.is-in{transform:scale(1);filter:blur(0)}
+
+/* Parallax uses the independent `translate` property, so it never
+   fights the transform-based reveals or the existing drift animations. */
+.js-motion [data-px]{will-change:translate}
+
+/* ---------- Buttons: gentle zoom on hover ---------- */
+.btn,.add-round,.social{
+  transition:transform var(--dur-ui) var(--ease-out),
+             background-color var(--dur-ui) var(--ease-out),
+             color var(--dur-ui) var(--ease-out),
+             border-color var(--dur-ui) var(--ease-out),
+             box-shadow var(--dur-ui) var(--ease-out);
+}
+.btn svg{transition:transform var(--dur-ui) var(--ease-out)}
+@media (hover:hover){
+  .btn:hover,.add-round:hover,.social:hover{transform:scale(1.05)}
+  .btn:active,.add-round:active,.social:active{transform:scale(1.02)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .btn:hover,.add-round:hover,.social:hover,
+  .btn:active,.add-round:active,.social:active{transform:none}
+}
+
+/* ---------- Brand chips: music + social as chop seals ----------
+   Same language as the 家 / 鮮 seals: 3px corners, a fine paper keyline
+   inside the red, a slight tilt. Ink outline at rest, red stamp when active. */
+.music-btn,.social-rail a{
+  display:grid;place-items:center;width:44px;height:44px;padding:0;gap:0;
+  border-radius:3px;border:0;
+  background:var(--c-card);color:var(--c-red);
+  box-shadow:inset 0 0 0 1px var(--c-red),inset 0 0 0 3px var(--c-card),inset 0 0 0 4px rgba(184,41,30,.35),0 10px 22px -16px rgba(60,40,20,.55);
+  transform:rotate(-4deg);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+  transition:transform var(--dur-ui) var(--ease-out),background-color var(--dur-ui) var(--ease-out),color var(--dur-ui) var(--ease-out),box-shadow var(--dur-ui) var(--ease-out);
+}
+.music-btn .music-text,.music-btn .han,.music-btn .bars{display:none}
+.music-btn svg,.social-rail svg{display:block;width:18px;height:18px}
+
+/* Pressed stamp: hover, focus, and music playing */
+.music-btn.on,
+.music-btn:focus-visible,.social-rail a:focus-visible{
+  background:var(--c-red);color:var(--c-paper);
+  box-shadow:inset 0 0 0 2px var(--c-red),inset 0 0 0 3px rgba(250,246,238,.85),0 12px 24px -14px rgba(143,30,22,.6);
+}
+@media (hover:hover){
+  .music-btn:hover,.social-rail a:hover{
+    background:var(--c-red);color:var(--c-paper);
+    box-shadow:inset 0 0 0 2px var(--c-red),inset 0 0 0 3px rgba(250,246,238,.85),0 12px 24px -14px rgba(143,30,22,.6);
+    transform:rotate(0deg) scale(1.05);
+  }
+}
+
+/* Music: bottom left */
+.music-btn{position:fixed;left:24px;right:auto;bottom:24px;z-index:60}
+.to-top,.to-top.solo{bottom:24px}
+@media (max-width:1180px){
+  .music-btn{left:16px;bottom:96px}
+  .to-top,.to-top.solo{bottom:96px}
+}
+
+/* ---------- Social rail: centre left, desktop only ---------- */
+.social-rail{position:fixed;left:24px;top:50%;transform:translateY(-50%);z-index:55;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  transition:opacity var(--dur-ui) var(--ease-out),visibility 0s}
+.social-rail .rail-label{writing-mode:vertical-rl;font-family:var(--f-display);font-size:14px;line-height:1;letter-spacing:.3em;color:var(--c-red);margin-bottom:-4px}
+.social-rail::before{content:none}
+.social-rail::after{content:"";order:-1;width:1px;height:40px;background:var(--c-red);opacity:.55}
+.social-rail .rail-label{order:-2}
+.social-rail .rail-end{width:1px;height:40px;background:rgba(30,27,24,.25)}
+.social-rail.is-away{opacity:0;visibility:hidden;transition:opacity var(--dur-ui) var(--ease-out),visibility 0s var(--dur-ui)}
+.page-checkout .social-rail{display:none}
+@media (max-width:1180px){.social-rail{display:none}}
+
+/* Smaller seals: 36px visual, 44px tap area kept */
+.music-btn,.social-rail a{width:36px;height:36px;min-height:0;position:relative}
+.music-btn{position:fixed}
+.music-btn svg,.social-rail svg{width:15px;height:15px}
+.music-btn::after,.social-rail a::after{content:"";position:absolute;inset:-4px}
+.social-rail{gap:12px}
+.social-rail .rail-label{font-size:12px}
+.social-rail::after,.social-rail .rail-end{height:32px}
+
+@media (prefers-reduced-motion:reduce){
+  .music-btn,.social-rail a,.music-btn:hover,.social-rail a:hover{transform:rotate(-4deg)}
+}
+
+
+/* ---------- Images float up from below on scroll ---------- */
+/* Uses the separate `translate` property so it never fights hover lifts (transform) or parallax. */
+.js-motion .float-in{
+  opacity:0;translate:0 96px;
+  transition:opacity var(--dur-reveal) var(--ease-out),translate 4.5s var(--ease-out);
+  transition-delay:var(--stagger,0s);
+}
+.js-motion .reveal.float-in{transform:none;filter:none}
+.js-motion .work.float-in{transition:opacity var(--dur-reveal) var(--ease-out) var(--stagger,0s),translate 4.5s var(--ease-out) var(--stagger,0s),transform .9s var(--ease-out) 0s}
+.js-motion .float-in.is-in{opacity:1;translate:0 0}
+@media (max-width:760px){.js-motion .float-in{translate:0 64px}.js-motion .float-in.is-in{translate:0 0}}
+
+/* ---------- Hero noodle bowl (scroll-scrubbed 3D render) ---------- */
+.noodle-seq{position:absolute;inset:0;background:#2a1a12;overflow:hidden}
+.noodle-poster,.noodle-canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.noodle-poster{object-fit:cover}
+.noodle-canvas{opacity:0}
+.noodle-seq.is-live .noodle-canvas{opacity:1}
+
+/* Desktop pin: hero holds while the noodles lift, then releases */
+@media (min-width:1025px) and (min-height:700px){
+  .noodle-pin .hero{overflow:clip}
+  .noodle-pin .hero > .wrap:has(> .hero-grid)::after{content:"";display:block;height:70vh}
+  .noodle-pin .hero-grid{position:sticky;top:var(--pin-top,110px)}
+}
+
+/* ---------- Floating noodle bowl (transparent render, no frame) ---------- */
+.noodle-seq.noodle-float{position:relative;inset:auto;width:100%;aspect-ratio:1/1;background:none;overflow:visible;margin:-24px auto -40px}
+.noodle-float .noodle-poster{object-fit:contain}
+.noodle-float .noodle-poster,.noodle-float .noodle-canvas{z-index:1}
+/* soft shadow on the paper, a little below the bowl so it reads as floating */
+.noodle-float::after{content:"";position:absolute;left:41%;bottom:4%;width:44%;height:7%;transform:translateX(-50%);
+  border-radius:50%;background:radial-gradient(closest-side,rgba(60,38,20,.30),rgba(60,38,20,0));filter:blur(4px);z-index:0}
+/* idle float: a slow bob, shadow breathes with it */
+@keyframes noodleBob{from{translate:0 -6px}to{translate:0 6px}}
+@keyframes noodleShadow{from{opacity:.75;transform:translateX(-50%) scale(.92)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.js-motion .noodle-float .noodle-poster,.js-motion .noodle-float .noodle-canvas{animation:noodleBob 6s cubic-bezier(0.45,0,0.55,1) infinite alternate}
+.js-motion .noodle-float::after{animation:noodleShadow 6s cubic-bezier(0.45,0,0.55,1) infinite alternate}
+@media (max-width:1024px){.noodle-seq.noodle-float{max-width:560px;margin:-16px auto -24px}}
+
+/* Bigger float: overscale the transparent canvas past its column without growing the layout */
+.noodle-seq.noodle-float{width:128%;margin:-16% -8% -20% -20%;max-width:none}
+@media (max-width:1024px){.noodle-seq.noodle-float{width:122%;max-width:none;margin:-14% -11% -18% -11%}}
+
+.noodle-seq.is-live .noodle-poster{visibility:hidden}
+
+/* v2.1: scroll zooms the floating bowl in (driven by --nz from motion.js) */
+.noodle-float{scale:var(--nz,1);transform-origin:42% 58%;will-change:scale}
+
+/* The zoomed bowl passes behind the hours strip instead of covering it */
+.hero-foot{position:relative;z-index:3}
+
+/* Desktop: bowl positioned by motion.js — centred level with the headline, right of it */
+@media (min-width:1025px) and (min-height:700px){
+  .noodle-pin .noodle-seq.noodle-float{position:absolute;margin:0;width:var(--nw,720px);left:var(--nl,560px);top:var(--nt,-40px)}
+  .noodle-pin .hero-art{min-height:460px}
+}
+.noodle-float{transform-origin:42.5% 68%}
+.noodle-float::after{left:42.5%;bottom:auto;top:84%}
+
+/* Social rail only where it clears the content column */
+@media (max-width:1399px){.social-rail{display:none}}
+
+/* Phones/tablets: centre the bowl itself (it sits at 42.5% of the render); chopsticks may run off the right edge */
+@media (max-width:1024px){.noodle-seq.noodle-float{margin:-14% -20.15% -18% -1.85%}}
+
+/* Phones/tablets: lift the bowl into the open space under the buttons; text and buttons stay in front and tappable */
+@media (max-width:1024px){
+  .noodle-seq.noodle-float{margin:-54% -20.15% -18% -1.85%}
+  .hero-grid > div:first-child{position:relative;z-index:2}
+}
+.noodle-float{pointer-events:none}
+
+/* Phones/tablets: chopsticks rise from behind the button row (soft fade instead of crossing the text) */
+@media (max-width:1024px){
+  .noodle-float{-webkit-mask-image:linear-gradient(to bottom,transparent 0,transparent var(--mtop,0px),#000 calc(var(--mtop,0px) + 56px));mask-image:linear-gradient(to bottom,transparent 0,transparent var(--mtop,0px),#000 calc(var(--mtop,0px) + 56px))}
+}
+
+
+/* Cart page: WhatsApp ordering */
+.co-submit .wa-ico{flex:none}
+.co-sent{margin:4px 0 0;padding:14px 16px;border:1px solid rgba(46,106,79,.35);background:rgba(46,106,79,.07);color:var(--c-ink);font-size:15px;line-height:1.5}
+.co-alt{margin:0;font-size:14px;color:var(--c-muted)}
+.co-alt a{color:var(--c-red)}

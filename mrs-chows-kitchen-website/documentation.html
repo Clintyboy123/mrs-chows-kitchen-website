@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ink &amp; Wok — HTML template</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+:root{--red:#B8291E;--ink:#1E1B18;--text:#4A443D;--muted:#6E665C;--paper:#FAF6EE;--card:#FFFDF8;--jade:#2E6A4F;--line:rgba(30,27,24,.14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#F3ECDF;--text:#D9D1C4;--muted:#A99F92;--paper:#1A1714;--card:#24201C;--line:rgba(243,236,223,.14);--red:#E0574A;--jade:#5FA884}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);font:16px/1.7 'Noto Sans SC','PingFang SC','Microsoft YaHei',system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:64px 24px 96px}
+header{display:flex;gap:16px;align-items:center;margin-bottom:48px}
+.seal{display:grid;place-items:center;width:52px;height:52px;background:var(--red);color:#FAF6EE;border-radius:4px;font:700 26px 'Noto Serif SC',serif;box-shadow:inset 0 0 0 2px var(--red),inset 0 0 0 3px rgba(250,246,238,.85);flex:none}
+h1,h2,h3{font-family:'Noto Serif SC','Songti SC',serif;color:var(--ink);line-height:1.2;text-wrap:balance}
+h1{font-size:40px;margin:0}h1 small{display:block;font-size:15px;color:var(--muted);font-weight:500;margin-top:6px;font-family:'Noto Sans SC',sans-serif}
+h2{font-size:28px;margin:64px 0 16px;padding-top:24px;border-top:1px solid var(--line)}
+h3{font-size:19px;margin:32px 0 8px}
+p,li{max-width:70ch}
+a{color:var(--red)}
+code,kbd{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--ink)}
+pre{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;overflow:auto;font:13px/1.6 ui-monospace,Menlo,monospace;color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--ink);font-weight:600}
+.toc{background:var(--card);border:1px solid var(--line);padding:20px 24px;border-radius:6px}
+.toc ol{margin:0;padding-left:20px}
+.note{border:1px solid var(--line);background:var(--card);padding:16px 20px;border-radius:6px}
+.warn{border-color:var(--red)}
+</style></head>
+<body><div class="wrap"><header><span class="seal">味</span><h1>Ink &amp; Wok — HTML template<small>Documentation · version 1.4.0</small></h1></header>
+
+<div class="toc"><ol>
+<li><a href="#start">Getting started</a></li><li><a href="#files">Files</a></li><li><a href="#text">Changing text</a></li>
+<li><a href="#photos">Adding photos</a></li><li><a href="#menu">Editing the menu</a></li><li><a href="#options">Site options</a></li>
+<li><a href="#colours">Colours and fonts</a></li><li><a href="#map">Map, ordering link and socials</a></li><li><a href="#publish">Publishing</a></li>
+<li><a href="#admin">The admin (edit without code)</a></li><li><a href="#speed">Speed and ordering on phones</a></li><li><a href="#ordering">Direct online ordering</a></li><li><a href="#credits">Credits and licences</a></li></ol></div>
+
+<h2 id="start">1. Getting started</h2>
+<p>There are two ways to edit: the browser-based <a href="#admin">admin</a> (needs PHP hosting, recommended for restaurant owners), or by hand in a code editor. Open <code>index.html</code> in any browser to see the site. To edit by hand, open the same file in a code editor (VS Code, Sublime Text, Nova, Notepad++). There is no build step: save the file and refresh the browser.</p>
+<p>The site has two responsive pages. <code>index.html</code> is the home page: hero, our story, signature dishes, culture, takeaway &amp; delivery, weekly special, contact with map, reviews and footer. <code>menu.html</code> is the menu page: the full menu (15 categories, 102 dishes in the demo) with category tabs and the order slip. Both share the same top bar, navigation and footer.</p>
+
+<h2 id="files">2. Files</h2>
+<pre>index.html                 the published home page (rebuilt by the admin on every Save &amp; publish)
+menu.html                  the published menu page (rebuilt at the same time)
+admin/                     the admin: index.php (screens), lib.php, template.php (home markup),
+                           template-menu.php (menu page markup), fields.php
+content/site.php           the content the admin edits (not publicly readable)
+assets/uploads/            photos uploaded in the admin
+assets/css/style.css       all styles; design tokens at the top
+assets/js/main.js          menu tabs, order slip, mobile menu, music, chopstick cursor
+assets/img/art/*.svg       watercolour landscapes behind sections
+assets/img/favicon.svg     browser tab icon (a red seal)
+documentation.html         this guide</pre>
+
+<h2 id="text">3. Changing text</h2>
+<div class="note warn"><strong>Using the admin?</strong> Then make changes there. Hand edits to <code>index.html</code> are replaced the next time someone presses Save &amp; publish. To change the page's structure, edit <code>admin/template.php</code> instead.</div>
+<p>Every word on the page is plain text in <code>index.html</code>; search for it and type over it. The restaurant name appears in the top bar, the footer, the map card and the copyright line, so use your editor's <em>Find and Replace</em> for <code>Jade Lantern</code>. Do the same for the address, phone number and opening hours.</p>
+<p>Phone links use the <code>tel:</code> format: <code>&lt;a href="tel:+10000000000"&gt;</code>. Keep the digits only, with your country code.</p>
+<p>The Chinese characters in red seals (味, 鮮, 傳 …) are decorative. Change the character inside <code>&lt;span class="seal"&gt;…&lt;/span&gt;</code> to use another one.</p>
+
+<h2 id="photos">4. Adding photos</h2>
+<p>The template ships without photographs. Each photo area shows a tinted placeholder labelled with what belongs there. To add a photo, copy it into <code>assets/img/</code> and replace the placeholder <code>&lt;div class="ph …"&gt;…&lt;/div&gt;</code> with:</p>
+<pre>&lt;img class="ph photo" src="assets/img/your-photo.jpg" alt="Describe the photo"&gt;</pre>
+<table><tr><th>Area</th><th>Recommended size</th></tr>
+<tr><td>Hero</td><td>1600 × 1200</td></tr><tr><td>Our story (kitchen)</td><td>1200 × 1500</td></tr>
+<tr><td>Weekly special</td><td>1200 × 1400</td></tr><tr><td>Signature dishes</td><td>first two 1200 × 800, others 900 × 900</td></tr>
+<tr><td>Menu thumbnails</td><td>300 × 300</td></tr></table>
+<p>Compress photos before uploading (e.g. squoosh.app) and keep each under about 300&nbsp;KB.</p>
+<p><strong>Logo:</strong> replace <code>&lt;span class="seal"&gt;味&lt;/span&gt;</code> in the navigation with <code>&lt;img class="logo-img" src="assets/img/logo.png" alt=""&gt;</code>. In the footer, replace the seal and name with <code>&lt;div class="logo-card" style="width:220px"&gt;&lt;img src="assets/img/logo-full.png" alt="Your name"&gt;&lt;/div&gt;</code>.</p>
+
+<h2 id="menu">5. Editing the menu</h2>
+<p><strong>Signature dishes</strong> are the <code>&lt;article class="work"&gt;</code> blocks inside <code>&lt;div class="gallery"&gt;</code>. The first two are shown large, the rest in rows of four. Copy a block to add a dish; delete one to remove it.</p>
+<p><strong>The full menu</strong> lives on <code>menu.html</code>. A link such as <code>menu.html#beef</code> opens that category directly (the signature dishes use this). It has a tab per category (<code>&lt;button … data-tab="starters"&gt;</code>) and a matching panel (<code>&lt;div role="tabpanel" id="panel-starters"&gt;</code>). To add a category, copy a tab and a panel and give both the same new id. Only the first panel has no <code>hidden</code> attribute.</p>
+<p>Every <em>Add</em> button carries the dish for the order slip:</p>
+<pre>&lt;button class="add-round" type="button"
+  data-add="kung-pao-chicken"      unique id, letters and dashes
+  data-name="Kung Pao Chicken"     name shown on the slip
+  data-price="13.90"&gt;+&lt;/button&gt;   number only; the symbol comes from data-currency</pre>
+<p>Change the price in both places: the visible <code>&lt;span class="price"&gt;</code> and <code>data-price</code>. If you leave <code>data-price</code> empty, the slip still counts items and shows the total as "—".</p>
+<p>The <em>View Special</em> button opens the category named in its <code>data-show-tab</code> attribute (default <code>combos</code>).</p>
+<div class="note"><strong>About the order slip.</strong> Guests build an order and choose collection or delivery; <em>Checkout</em> takes them to the site's own checkout (see <a href="#ordering">Direct online ordering</a>). Payment happens on collection or delivery. To use an ordering provider instead, switch off online ordering in the admin and set the Online ordering link.</div>
+
+<h2 id="options">6. Site options</h2>
+<p>Options are attributes on the <code>&lt;body&gt;</code> tag at the top of <code>index.html</code>:</p>
+<table><tr><th>Attribute</th><th>What it does</th></tr>
+<tr><td><code>data-currency="$"</code></td><td>Currency symbol for totals.</td></tr>
+<tr><td><code>data-order-url="https://…"</code></td><td>Where <em>Checkout</em> goes.</td></tr>
+<tr><td><code>data-prep-time="20–30"</code></td><td>Collection estimate (minutes).</td></tr>
+<tr><td><code>data-delivery-time="40–50"</code></td><td>Delivery estimate (minutes).</td></tr>
+<tr><td><code>data-cursor="off"</code></td><td>Turns off the chopstick cursor.</td></tr>
+<tr><td><code>data-music="off"</code></td><td>Hides the music button.</td></tr>
+<tr><td><code>class="no-art"</code></td><td>Hides the watercolour landscapes.</td></tr>
+<tr><td><code>class="no-paper"</code></td><td>Removes the rice-paper texture.</td></tr></table>
+<p>The music is generated in the browser (a guzheng-style melody on the Chinese pentatonic scale), so there is no audio file and nothing to license. Browsers only allow sound after a visitor taps, so it never plays by itself. The cursor only appears for a mouse; phones and tablets are unaffected. Both respect "reduce motion" settings.</p>
+
+<h2 id="colours">7. Colours and fonts</h2>
+<p>At the top of <code>assets/css/style.css</code> are the design tokens. Change a value and the whole site follows:</p>
+<pre>--c-red:#B8291E;     seals, buttons, accents
+--c-jade:#2E6A4F;    green accents
+--c-ink:#1E1B18;     text
+--c-paper:#FAF6EE;   page background
+--c-forest:#1F3D2E;  footer
+--f-display  headings (Noto Serif SC — a Song/Ming face)
+--f-body     paragraphs (Noto Sans SC — a Hei face)
+--f-brush    Chinese brush characters (Ma Shan Zheng)
+--f-script   hand-signed lines (Ma Shan Zheng)</pre>
+<p>To use your own script font, add an <code>@font-face</code> rule at the top of the stylesheet and put its name first in <code>--f-script</code>. Check the font's licence allows commercial use on websites.</p>
+
+<h2 id="map">8. Map, ordering link and socials</h2>
+<p>The map is a Google Maps embed. In <code>index.html</code> find <code>class="map-embed"</code> and change the text after <code>?q=</code> to your restaurant's name and address (spaces as <code>+</code>). Point both <em>Directions</em> buttons at your Google Maps share link (Google Maps → your place → Share → Copy link).</p>
+<p>Social icons are in the footer under <em>Follow</em>; set each <code>href</code> to your page.</p>
+
+<h2 id="publish">9. Publishing</h2>
+<p>Upload the whole folder (keeping <code>assets/</code> next to <code>index.html</code>) to any web host: your hosting control panel's file manager, FTP, or a static host such as Netlify, Cloudflare Pages or GitHub Pages (drag and drop the folder).</p>
+
+<h2 id="admin">10. The admin (edit without code)</h2>
+<p>The template includes a password-protected admin at <code>/admin</code>. Restaurant owners can change every text, the menu, prices, photos, logo, colours and features in the browser, without touching code.</p>
+<h3>How it works</h3>
+<p>Content is stored in <code>content/site.php</code>. When you press <strong>Save &amp; publish</strong>, the admin rebuilds <code>index.html</code> from <code>admin/template.php</code>. Visitors always get a fast static page, and the admin is only used when you edit.</p>
+<h3>Requirements</h3>
+<ul><li>Hosting with <strong>PHP 8.0 or newer</strong> (almost every shared host: cPanel, Plesk, Hostinger, Afrihost, Xneelo, SiteGround …). No database needed.</li>
+<li>The website folder must be writable by PHP (usually already true). If the admin shows "cannot write index.html", set the folder and <code>index.html</code>, <code>content/</code> and <code>assets/uploads/</code> to permissions 755 (folders) and 644 (files) in your host's file manager, or ask your host to make them writable by PHP.</li>
+<li>Free static hosts (Netlify, GitHub Pages, Cloudflare Pages) cannot run PHP. There, delete the <code>admin</code> and <code>content</code> folders and edit <code>index.html</code> as described above.</li></ul>
+<h3>First use</h3>
+<ol><li>Upload the whole folder to your host.</li>
+<li>Straight away, open <code>https://your-site/admin/</code> and choose a password (10+ characters). Until a password is set, whoever opens the admin first can claim it, so do this immediately after uploading.</li>
+<li>Edit, then press <strong>Save &amp; publish</strong>. Use <strong>Preview changes</strong> to see edits in a new tab before publishing.</li></ol>
+<h3>What you can edit</h3>
+<table><tr><th>Tab</th><th>Contents</th></tr>
+<tr><td>Details</td><td>Name, seal character, tagline, address, phone, map search, directions link, socials</td></tr>
+<tr><td>Hours &amp; ordering</td><td>Opening hours, collection/delivery times, ordering link, currency, delivery/collection text</td></tr>
+<tr><td>Home</td><td>Headline, intro, captions, hero photo</td></tr>
+<tr><td>Our story</td><td>Heading, paragraphs, numbers, signature, kitchen photo</td></tr>
+<tr><td>Menu</td><td>Categories (tabs) and dishes: name, price, description, tag, photo, signature-gallery position, gallery text. Add, delete and reorder with the arrows.</td></tr>
+<tr><td>Weekly special</td><td>Name, price seal, description, three items, small print, photo</td></tr>
+<tr><td>Reviews</td><td>Three quotes with name and source</td></tr>
+<tr><td>Logo &amp; look</td><td>Top-bar logo, footer logo, five brand colours, feature switches</td></tr>
+<tr><td>Account</td><td>Change password, restore one of the last 10 saved versions, publish again, log out</td></tr></table>
+<h3>Photos</h3>
+<p>JPG, PNG or WebP up to 8&nbsp;MB. Very large photos are scaled down to 1800&nbsp;px automatically when the host supports it. Uploaded files are stored in <code>assets/uploads/</code> under random names.</p>
+<h3>Security</h3>
+<ul><li>The password is stored only as a hash (<code>content/config.php</code>). Forgot it? Delete that file in your host's file manager and open <code>/admin</code> to choose a new one.</li>
+<li>Five wrong passwords lock the login for 15 minutes. Sessions end after 2 hours of inactivity.</li>
+<li>Every form is protected against cross-site requests; uploads are checked to be real images; scripts can't run from the uploads folder (Apache <code>.htaccess</code> included).</li>
+<li>Content files start with a PHP guard, so opening them in a browser shows nothing. On <strong>nginx</strong> hosts also deny web access to <code>/content/</code> in the server config: <code>location ^~ /content/ { deny all; }</code></li>
+<li>Always use HTTPS for your site (most hosts include a free certificate).</li></ul>
+<h3>For developers</h3>
+<p>The page markup lives in <code>admin/template.php</code> (home) and <code>admin/template-menu.php</code> (menu) and uses <code>e(f($s, 'key'))</code> for each field. To add a field, add it to <code>admin/fields.php</code> and use it in the template. It appears in the admin automatically. After editing the template, press <em>Account → Publish again</em>.</p>
+
+<h2 id="speed">Speed and ordering on phones (1.1)</h2>
+<ul>
+<li><strong>Photos load at the right size.</strong> When you publish from the admin, every photo gets small WebP copies (160, 480, 960 and 1600 px wide), and each page tells the browser which to use. A phone downloads about a sixth of what it used to. Photos you upload are also scaled down to 1800 px. This needs the GD image library with WebP, which almost every host has; without it the original photo is used.</li>
+<li><strong>Textures are images.</strong> The rice-paper texture and the watercolour landscapes are small WebP files in <code>assets/img/</code> (the original vector art is kept in <code>assets/img/art/source/</code>), so scrolling stays smooth on older phones.</li>
+<li><strong>Calmer on phones.</strong> On phones and tablets the slow hero drift, drifting clouds and the frosted-glass blur behind the header are switched off. Desktop keeps them.</li>
+<li><strong>The map loads when asked.</strong> The contact section shows the drawn map with a <em>Show live map</em> button; the Google map (about 1&nbsp;MB) only loads when someone taps it.</li>
+<li><strong>The order is remembered.</strong> Dishes stay in the order slip when guests move between the home and menu pages, and for 24 hours (stored in their browser only). The order count shows on the home page too, and a <em>Clear order</em> link empties it.</li>
+<li><strong>Order panel on phones and tablets.</strong> Below 1180 px wide the order slip slides up from the bottom bar (<em>View order</em>) instead of sitting below the whole menu.</li>
+<li><strong>Search and filters.</strong> The menu page has a search box and All / Vegetarian / Spicy filters. They use the dish names, descriptions and tags, so nothing extra to set up.</li>
+</ul>
+
+<h2 id="ordering">Direct online ordering (1.2)</h2><div class="note"><strong>Replaced in 2.4: orders now come in on WhatsApp.</strong> The cart page no longer places orders online. Guests enter their name, choose collection or delivery (with an address for delivery), the time and any notes, then <em>Send order on WhatsApp</em> opens WhatsApp with the whole order typed out to the restaurant's number. There is no payment, no order email and no Orders tab, and <code>order.php</code> has been removed. Set the restaurant's WhatsApp number in the admin. The rest of this section describes the old online ordering and no longer applies.</div>
+<p>Guests order straight from the website and pay when they collect or when the food is delivered. No ordering provider or commission is involved.</p>
+<h3>How an order flows</h3>
+<ol><li>The guest adds dishes on the menu page and presses <strong>Checkout</strong>. This opens <code>checkout.html</code>.</li>
+<li>They choose collection or delivery, enter their name, phone number, an address for delivery, as soon as possible or a time later today, and an optional note. Then they press <strong>Place order</strong>.</li>
+<li>The order appears in the admin's <strong>Orders</strong> tab (which checks for new orders every 20 seconds and shows "(1) New order" in the browser tab) and is emailed to the restaurant. The guest sees an order number, and a confirmation email if they gave an address.</li>
+<li>In the Orders tab, move each order along: <em>Accept → Mark ready → Complete</em>, or <em>Cancel</em> (call the guest first). Orders older than 90 days are deleted automatically.</li></ol>
+<h3>Set-up checklist (Hours &amp; ordering → Online ordering)</h3>
+<ul><li><strong>Prices:</strong> every dish you want to sell online needs a numeric price in the Menu tab, e.g. <code>89.00</code>. Ordering stays closed (with a "please call us" message) until at least one dish has a price; dishes without a price can't be ordered online.</li>
+<li><strong>Order email:</strong> where new orders are sent. Orders are always saved in the admin too, so an email that lands in spam doesn't lose an order. Emails go through your host's PHP mail; if they don't arrive, ask your host to enable it, or simply keep the admin open.</li>
+<li><strong>Collection / delivery, delivery fee and minimum order for delivery.</strong></li>
+<li><strong>Time zone:</strong> pick yours so order times are right (many servers run on UTC).</li>
+<li><strong>Accept orders switch:</strong> turn it off to pause online ordering, e.g. when you're fully booked.</li></ul>
+<h3>Protection against fake orders and bots</h3>
+<p>Every order passes these checks on the server:</p>
+<ul><li><strong>Prices from your menu.</strong> The browser only sends which dishes and how many; names, prices and totals are recalculated from your saved menu, so nobody can change a price.</li>
+<li><strong>Signed form check.</strong> Each checkout page gets a signed, time-limited token; orders sent in under 4 seconds (bot speed) or from another website are refused.</li>
+<li><strong>Hidden spam trap.</strong> A field people never see; bots that fill it in are refused.</li>
+<li><strong>Rate limit.</strong> At most 5 orders per visitor per 30 minutes.</li>
+<li><strong>Cloudflare Turnstile (recommended).</strong> A free, privacy-friendly check that's usually invisible. In your Cloudflare account go to <em>Turnstile → Add site</em>, enter your domain, then paste the <em>site key</em> and <em>secret key</em> into the admin. The check then appears above <strong>Place order</strong> and is verified on the server.</li></ul>
+<h3>Privacy</h3>
+<p>Orders hold names, phone numbers and addresses. They're stored in <code>content/orders/</code>, which can't be opened from the web, and are deleted after 90 days. Mention online orders in your privacy notice (in South Africa, POPIA applies).</p>
+<h3>Files</h3>
+<pre>checkout.html              the checkout page (rebuilt by the admin)
+order.php                  receives orders from checkout.html
+admin/orders.php           order rules, checks, storage and emails
+admin/template-checkout.php  checkout page markup
+content/orders/            saved orders (not publicly readable)</pre>
+<p>Prefer an ordering provider? Switch off <em>Accept orders on the website</em>; the Checkout button then uses the <em>Online ordering link</em> (Hours &amp; ordering) instead.</p>
+
+<h2 id="whatsapp">WhatsApp (1.6)</h2>
+<p>In <strong>/admin → Details → WhatsApp number</strong>, enter the number with its country code, digits only (e.g. 27821234567). A WhatsApp button then appears in the phone bottom bar, the contact section and the footer; it opens a chat that starts "Hi …, I'd like to place an order."</p>
+<p>The cart page also gets <strong>Send order on WhatsApp</strong>: it opens a chat with the dishes, quantities, total, collection or delivery and any details the guest has filled in, ready to send. It also shows while online ordering is switched off, so guests can still send their cart. Leave the number empty to hide every WhatsApp button.</p>
+
+<h2 id="credits">11. Credits and licences</h2>
+<ul>
+<li>Design, code, watercolour landscapes, paper texture, cursor and music synthesiser: original work, covered by your licence for this template.</li>
+<li>Noto Serif SC, Noto Sans SC, Ma Shan Zheng: SIL Open Font License 1.1, loaded from Google Fonts.</li>
+<li>No photographs or third-party images are included.</li>
+</ul>
+<h3>Demo content</h3>
+<p>The restaurant name, address, prices and reviews are fictional sample content. Replace them before publishing.</p>
+<table><tr><th>Field</th><th>Demo value</th></tr><tr><th colspan="2">Restaurant details</th></tr><tr><td>Restaurant name</td><td><code>Jade Lantern</code></td></tr><tr><td>Seal character (used when no logo is set)</td><td><code>味</code></td></tr><tr><td>Tagline (footer, script font)</td><td><code>Traditional flavour. Made fresh.</code></td></tr><tr><td>Year opened</td><td><code>1998</code></td></tr><tr><td>Area / suburb, city</td><td><code>Riverside, Your City</code></td></tr><tr><td>Area, city, country (footer)</td><td><code>Riverside, Your City, Country</code></td></tr><tr><td>Top bar text</td><td><code>Serving Riverside since 1998</code></td></tr><tr><td>Phone number (as shown)</td><td><code>(000) 000-0000</code></td></tr><tr><td>Phone number (for tel: links, digits only)</td><td><code>+10000000000</code></td></tr><tr><td>Address line 1</td><td><code>88 Lantern Lane</code></td></tr><tr><td>Address line 2</td><td><code>Riverside, Your City, 0000</code></td></tr><tr><td>Short address (footer)</td><td><code>88 Lantern Lane, Riverside</code></td></tr><tr><td>Map search (name + address as you would type it into Google Maps)</td><td><code>Chinatown, San Francisco, CA</code></td></tr><tr><td>Directions link (Google Maps share link)</td><td><code>https://maps.google.com/?q=Chinatown,+San+Francisco</code></td></tr><tr><td>Social handle (without @)</td><td><code>jadelantern</code></td></tr><tr><td>Facebook URL</td><td><code>#</code></td></tr><tr><td>Instagram URL</td><td><code>#</code></td></tr><tr><td>TikTok URL</td><td><code>#</code></td></tr><tr><td>Copyright year</td><td><code>2026</code></td></tr><tr><th colspan="2">Hours &amp; ordering</th></tr><tr><td>Opening days</td><td><code>Monday – Sunday</code></td></tr><tr><td>Opening hours</td><td><code>11:00 – 22:00</code></td></tr><tr><td>Public holiday hours</td><td><code>Public holidays: 12:00 – 21:00</code></td></tr><tr><td>Collection time (minutes)</td><td><code>20–30</code></td></tr><tr><td>Delivery time (minutes)</td><td><code>40–50</code></td></tr><tr><td>Online ordering link (Checkout button)</td><td><code>#full-menu</code></td></tr><tr><td>Online ordering name (e.g. your ordering site)</td><td><code>our online ordering partner</code></td></tr><tr><td>Currency symbol</td><td><code>$</code></td></tr><tr><td>Delivery tile</td><td><code>Delivering within 5 km. Delivery fee $3 · minimum order $20.</code></td></tr><tr><td>Collection tile</td><td><code>Order ahead online or by phone and collect from 88 Lantern Lane. Free parking out front.</code></td></tr><tr><td>Preparation tile</td><td><code>Approx. 20–30 minutes from order. Longer on busy Friday nights.</code></td></tr><tr><td>Menu prices note</td><td><code>Prices include tax · updated monthly</code></td></tr><tr><th colspan="2">Hero</th></tr><tr><td>Headline (line 1)</td><td><code>Authentic flavour.</code></td></tr><tr><td>Headline (line 2, red)</td><td><code>Timeless tradition.</code></td></tr><tr><td>Intro sentence</td><td><code>Traditional Chinese-inspired dishes, freshly prepared and made for sharing.</code></td></tr><tr><td>Photo caption (left)</td><td><code>House favourites</code></td></tr><tr><td>Photo caption (right)</td><td><code>Noodles, fried rice, dumplings &amp; stir-fried vegetables</code></td></tr><tr><td>Hero photo (1600 × 1200)</td><td><code><em>empty</em></code></td></tr><tr><th colspan="2">Our story</th></tr><tr><td>Heading (line 1)</td><td><code>Tradition</code></td></tr><tr><td>Heading (line 2, red)</td><td><code>passed down</code></td></tr><tr><td>Paragraph 1</td><td><code>For generations, great food has brought people together. Our kitchen combines traditional Chinese flavours, time-honoured cooking techniques and a passion for freshly prepared food.</code></td></tr><tr><td>Paragraph 2</td><td><code>We opened our doors in 1998 with a handful of family recipes. Today the same wok, the same sauces and the same welcome bring our regulars back every week.</code></td></tr><tr><td>Dishes on the menu (number)</td><td><code>50</code></td></tr><tr><td>Signature line</td><td><code>The Lin Family</code></td></tr><tr><td>Kitchen photo (1200 × 1500)</td><td><code><em>empty</em></code></td></tr><tr><th colspan="2">Weekly special</th></tr><tr><td>Price on the seal</td><td><code>$49</code></td></tr><tr><td>Name (line 1)</td><td><code>Family</code></td></tr><tr><td>Name (line 2, green)</td><td><code>Feast</code></td></tr><tr><td>Description</td><td><code>Feed the family with our delicious selection of Chinese favourites.</code></td></tr><tr><td>Item i.</td><td><code>3 mains of your choice</code></td></tr><tr><td>Item ii.</td><td><code>Large special fried rice or chow mein</code></td></tr><tr><td>Item iii.</td><td><code>6 vegetable spring rolls &amp; prawn crackers</code></td></tr><tr><td>Small print</td><td><code>Feeds 4 · available every day</code></td></tr><tr><td>Menu category opened by &quot;View Special&quot; (slug)</td><td><code>combos</code></td></tr><tr><td>Special photo (1200 × 1400)</td><td><code><em>empty</em></code></td></tr><tr><th colspan="2">Reviews</th></tr><tr><td>Review 1 — quote</td><td><code>Absolutely delicious and always freshly prepared.</code></td></tr><tr><td>Review 1 — name</td><td><code>Sample Guest</code></td></tr><tr><td>Review 1 — source</td><td><code>Google review</code></td></tr><tr><td>Review 2 — quote</td><td><code>One of our family&#x27;s favourite takeaway spots.</code></td></tr><tr><td>Review 2 — name</td><td><code>Sample Guest</code></td></tr><tr><td>Review 2 — source</td><td><code>Facebook review</code></td></tr><tr><td>Review 3 — quote</td><td><code>Great portions, great flavour and friendly service.</code></td></tr><tr><td>Review 3 — name</td><td><code>Sample Guest</code></td></tr><tr><td>Review 3 — source</td><td><code>Google review</code></td></tr></table>
+
+</div></body></html>

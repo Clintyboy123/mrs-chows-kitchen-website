@@ -1,0 +1,24 @@
+# Mrs Chow's Kitchen website — what stays out of the repo
+
+# Secrets and live data the admin writes on the server
+mrs-chows-kitchen-website/content/admin*.php
+mrs-chows-kitchen-website/content/config*.php
+mrs-chows-kitchen-website/content/backups/*
+!mrs-chows-kitchen-website/content/backups/index.html
+mrs-chows-kitchen-website/content/orders/
+.env
+.env.*
+
+# Build outputs (rebuild from the folders)
+*.zip
+
+# Separate products, not part of this site
+ink-and-wok-html-template/
+ink-and-wok-wordpress-theme/
+
+# 3D renders: regenerate with _source/noodle-bowl/noodle_bowl.py (about 35 min)
+_source/noodle-bowl/render/
+*.blend1
+
+# System clutter
+.DS_Store
