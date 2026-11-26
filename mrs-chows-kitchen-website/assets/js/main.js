@@ -212,6 +212,8 @@
   var musicBtn = $('.music-btn');
   if (musicBtn && opt('music', 'on') === 'off') musicBtn.hidden = true;
   var engine = null, playing = false;
+  var stored = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  var store = function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} };
 
   var makeEngine = function () {
     var AC = window.AudioContext || window.webkitAudioContext;
@@ -239,14 +241,28 @@
       var s = ctx.createBufferSource(); s.buffer = pluck(hz);
       if (bend) { s.playbackRate.setValueAtTime(1, t + 0.25); s.playbackRate.linearRampToValueAtTime(1.0595, t + 0.55); s.playbackRate.linearRampToValueAtTime(1, t + 1.1); }
       var g = ctx.createGain(); g.gain.value = vel;
-      var tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 3200;
+      var tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = piece.tone;
       s.connect(tone); tone.connect(g); g.connect(dry); g.connect(verb);
       s.start(t); s.stop(t + 3.4);
     };
-    // D gong pentatonic (D E F# A B) across two octaves, plus low roots
-    var scale = [293.66, 329.63, 369.99, 440, 493.88, 587.33, 659.25, 739.99, 880, 987.77];
-    var roots = [146.83, 110, 123.47];
-    var durs = [0.5, 0.5, 0.75, 1, 1, 1.5];
+    // Four pieces in the same plucked-string voice. Skip moves to the next one.
+    var PIECES = [
+      { name: 'Morning Tea',   // D gong pentatonic, unhurried
+        scale: [293.66, 329.63, 369.99, 440, 493.88, 587.33, 659.25, 739.99, 880, 987.77],
+        roots: [146.83, 110, 123.47], durs: [0.5, 0.5, 0.75, 1, 1, 1.5], pace: 1.15, rest: [1.8, 2.4], tone: 3200, wet: 0.45 },
+      { name: 'Lantern Night', // A yu (minor) pentatonic, slow and dark
+        scale: [220, 261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25, 783.99],
+        roots: [110, 98, 130.81], durs: [0.75, 1, 1, 1.5, 2], pace: 1.35, rest: [2.4, 3.2], tone: 2400, wet: 0.6 },
+      { name: 'River Market',  // G gong pentatonic, flowing and bright
+        scale: [392, 440, 493.88, 587.33, 659.25, 783.99, 880, 987.77, 1174.66, 1318.51],
+        roots: [196, 146.83, 164.81], durs: [0.25, 0.5, 0.5, 0.5, 0.75, 1], pace: 0.95, rest: [1.2, 1.8], tone: 3800, wet: 0.38 },
+      { name: 'Mountain Mist', // E shang pentatonic, low register
+        scale: [164.81, 185, 220, 246.94, 277.18, 329.63, 370, 440, 493.88, 554.37],
+        roots: [82.41, 110, 123.47], durs: [0.75, 1, 1, 1.5], pace: 1.25, rest: [2, 3], tone: 2000, wet: 0.55 }
+    ];
+    var pieceAt = Math.min(PIECES.length - 1, Math.max(0, parseInt(stored('mck-piece'), 10) || 0));
+    var piece = PIECES[pieceAt];
+    var scale = piece.scale, roots = piece.roots, durs = piece.durs;
     var timer = 0, next = 0, idx = 4, running = false;
     var pick = function (a) { return a[Math.floor(Math.random() * a.length)]; };
     var phrase = function () {
@@ -258,28 +274,107 @@
         idx = Math.min(scale.length - 1, Math.max(0, idx + pick([-2, -1, -1, 1, 1, 2])));
         if (Math.random() < 0.2 && idx > 0) play(scale[idx - 1], t - 0.07, 0.16, false); // grace note
         play(scale[idx], t, 0.26 + Math.random() * 0.1, Math.random() < 0.18);
-        t += pick(durs) * 1.15;
+        t += pick(durs) * piece.pace;
       }
-      next = t + 1.8 + Math.random() * 2.4; // breathe between phrases
+      next = t + piece.rest[0] + Math.random() * piece.rest[1]; // breathe between phrases
       timer = setTimeout(phrase, (next - ctx.currentTime - 0.4) * 1000);
     };
+    var vol = parseFloat(stored('mck-volume'));
+    if (isNaN(vol)) vol = 0.7;
+    var level = function () { return 0.46 * vol; };          // 70% ≈ the original loudness
+    var setPiece = function (i) {
+      pieceAt = (i + PIECES.length) % PIECES.length; piece = PIECES[pieceAt];
+      scale = piece.scale; roots = piece.roots; durs = piece.durs; idx = 4; cache = {};
+      wet.gain.setTargetAtTime(piece.wet, ctx.currentTime, 0.3);
+      store('mck-piece', String(pieceAt));
+    };
+    wet.gain.value = piece.wet;
     return {
-      start: function () { ctx.resume(); running = true; master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(0.32, ctx.currentTime, 0.8); next = 0; phrase(); },
-      stop: function () { running = false; clearTimeout(timer); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(0, ctx.currentTime, 0.4); }
+      start: function () { ctx.resume(); running = true; master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(level(), ctx.currentTime, 0.8); next = 0; phrase(); },
+      stop: function () { running = false; clearTimeout(timer); master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(0, ctx.currentTime, 0.4); },
+      volume: function (v) {
+        vol = Math.min(1, Math.max(0, v)); store('mck-volume', vol.toFixed(2));
+        if (running) { master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(level(), ctx.currentTime, 0.08); }
+      },
+      getVolume: function () { return vol; },
+      // Skip: fade out, change piece, fade the new one in.
+      next: function () {
+        clearTimeout(timer);
+        master.gain.cancelScheduledValues(ctx.currentTime);
+        master.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
+        setPiece(pieceAt + 1);
+        timer = setTimeout(function () {
+          if (!running) return;
+          next = 0; master.gain.setTargetAtTime(level(), ctx.currentTime, 0.6); phrase();
+        }, 550);
+        return piece.name;
+      },
+      pieceName: function () { return piece.name; }
     };
   };
 
   if (musicBtn) {
     var label = $('.music-text', musicBtn);
+    // Skip + volume: a small pill beside the seal, shown while music plays.
+    var ctl = document.createElement('div');
+    ctl.className = 'music-ctl';
+    ctl.setAttribute('role', 'group');
+    ctl.setAttribute('aria-label', 'Music controls');
+    ctl.hidden = true;
+    ctl.innerHTML = '<button type="button" class="music-skip" aria-label="Next piece">'
+      + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5l9 7-9 7z"/><path d="M18 5v14"/></svg></button>'
+      + '<label class="music-vol"><span class="sr-only">Music volume</span>'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>'
+      + '<input type="range" min="0" max="100" step="1" value="70"></label>'
+      + '<span class="music-name" aria-live="polite"></span>';
+    musicBtn.insertAdjacentElement('afterend', ctl);
+    var range = $('input', ctl), nameEl = $('.music-name', ctl), skipBtn = $('.music-skip', ctl);
+    var paint = function () { range.style.setProperty('--fill', range.value + '%'); };
+    var showName = function (n) {
+      nameEl.textContent = n; skipBtn.setAttribute('aria-label', 'Next piece (now playing: ' + n + ')');
+      ctl.classList.add('show-name'); clearTimeout(showName.t);
+      showName.t = setTimeout(function () { ctl.classList.remove('show-name'); }, 2600);
+    };
+    range.addEventListener('input', function () { paint(); if (engine) engine.volume(range.value / 100); });
+    skipBtn.addEventListener('click', function () { if (engine && playing) showName(engine.next()); });
+
+    // The pill fades away when you click or tap anywhere else; hover/focus the seal (or tap it on a phone) to bring it back.
+    var openedAt = 0, closeTimer = 0, lastPointer = '';
+    var openCtl = function () {
+      if (!playing) return;
+      clearTimeout(closeTimer);
+      ctl.classList.remove('is-closing');
+      if (ctl.hidden) { ctl.hidden = false; openedAt = performance.now(); }
+    };
+    var closeCtl = function () {
+      if (ctl.hidden || ctl.classList.contains('is-closing')) return;
+      ctl.classList.add('is-closing');
+      closeTimer = setTimeout(function () { ctl.hidden = true; ctl.classList.remove('is-closing'); }, 650);
+    };
+    document.addEventListener('pointerdown', function (e) {
+      if (ctl.hidden || performance.now() - openedAt < 300) return;     // ignore the tap that just opened it
+      if (ctl.contains(e.target) || musicBtn.contains(e.target)) return;
+      closeCtl();
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCtl(); });
+    musicBtn.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') openCtl(); });
+    musicBtn.addEventListener('focus', function () { if (musicBtn.matches(':focus-visible')) openCtl(); });
+    musicBtn.addEventListener('pointerdown', function (e) { lastPointer = e.pointerType; });
+
     musicBtn.addEventListener('click', function () {
       engine = engine || makeEngine();
       if (!engine) return;
+      // Phones: while playing with the controls tucked away, the first tap brings them back instead of stopping.
+      var touch = lastPointer === 'touch' || lastPointer === 'pen'; lastPointer = '';
+      if (playing && touch && (ctl.hidden || ctl.classList.contains('is-closing'))) { openCtl(); return; }
       playing = !playing;
       playing ? engine.start() : engine.stop();
       musicBtn.classList.toggle('on', playing);
       musicBtn.setAttribute('aria-pressed', playing ? 'true' : 'false');
       musicBtn.setAttribute('aria-label', playing ? 'Turn background music off' : 'Play soft traditional music');
       if (label) label.textContent = playing ? 'Music on' : 'Play music';
+      if (playing) { openCtl(); range.value = Math.round(engine.getVolume() * 100); paint(); showName(engine.pieceName()); }
+      else { clearTimeout(closeTimer); ctl.classList.remove('is-closing'); ctl.hidden = true; }
     });
   }
 

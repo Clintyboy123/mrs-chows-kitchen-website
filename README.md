@@ -1,6 +1,6 @@
 # Ink & Wok — packages
 
-Built 2026-10-05 · updated 2026-11-02 · version 2.5.1 (Mrs Chow's site; Ink & Wok template stays 1.6.2)
+Built 2026-10-05 · updated 2026-11-02 · version 2.6.0 (Mrs Chow's site; Ink & Wok template stays 1.6.2)
 
 | Folder | What it is | Who it's for |
 |---|---|---|
@@ -31,7 +31,9 @@ The admin is the `admin/` folder inside `mrs-chows-kitchen-website/` (and inside
 
 **In Docker:** same as live, `[domain]/admin`. See `techstack.md`, section 5.
 
-**Version 2.5 (Mrs Chow's site, current):** the floating bowl starts about 30% bigger on desktop (about 394 px across at 1440 wide, level with the headline); its chopstick tops may now tuck behind the header. Because it starts bigger, the scroll zoom is gentler (1× → 1.4×). A drag-to-turn version was tried and removed.
+**Version 2.6 (Mrs Chow's site, current):** music controls — while music plays, a small pill beside the music seal offers **skip** (four pieces in the same guzheng voice: Morning Tea, Lantern Night, River Market, Mountain Mist, crossfaded) and a **volume** slider; the piece and volume are remembered on the device. The pill fades away when you click or tap anywhere else; hover or focus the seal to bring it back (on phones, the first tap on the seal brings it back and a second tap stops the music). Phones no longer show the drifting cloud outlines behind the hero.
+
+**Version 2.5 (Mrs Chow's site):** the floating bowl starts about 30% bigger on desktop (about 394 px across at 1440 wide, level with the headline); its chopstick tops may now tuck behind the header. Because it starts bigger, the scroll zoom is gentler (1× → 1.4×). A drag-to-turn version was tried and removed.
 
 **Version 2.4 (Mrs Chow's site):** online ordering is removed — the cart page is now a WhatsApp order form. Guests review their order (change quantities in the order slip), enter their name, choose collection or delivery (delivery asks for an address), when, and kitchen notes, then “Send order on WhatsApp” opens WhatsApp with the whole order typed out to the restaurant's number. No payment, no order server: `order.php` is gone and the admin's online-ordering settings (order email, Turnstile, Orders tab) are no longer used. The Mrs Chow's WordPress version has been dropped; this HTML + admin site is the only Mrs Chow's build. (The generic Ink & Wok WordPress theme is unchanged.)
 
